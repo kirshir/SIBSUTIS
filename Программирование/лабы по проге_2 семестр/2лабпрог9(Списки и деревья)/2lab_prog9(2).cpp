@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Student{
+	char lastname[16];
+	int grades[4];
+	struct Student *next;
+	struct Student *prev;
+};
+
+struct Student* create(char lastname[], int grades[]) {
+	struct Student *newNode = (struct Student*)malloc(sizeof(struct Student));
+	if (newNode == NULL) {
+		printf("Memory Error\n");
+		exit(1);
+	}
+	strcpy(newNode->lastname, lastname);
+	memcpy(newNode->grades, grades, sizeof(newNode->grades));
+	newNode->next = NULL;
+	return newNode;
+}
+
+struct Student* add(struct Student *head, char lastname[], int grades[]) {
+	if (head == NULL) {
+		head = create(lastname, grades);
+	}
+	else {
+		struct Student *cursor = head;
+		while (cursor->next != NULL) {
+			cursor = cursor->next;
+		}
+		struct Student *newNode = create(lastname, grades);
+		cursor->next = newNode;
+		newNode->prev = cursor;
+	}
+	return head;
+}
+
+void print_list(struct Student *head) {
+	while (head) {
+		printf("%s: ", head->lastname);
+		for (int i = 0; i < 4; i++){
+			printf("%d ", head->grades[i]);
+		}
+		printf("\n");
+		head = head->next;
+	}
+}
+
+struct Student* deleteList(struct Student *head) {
+	struct Student *cursor = head;
+	struct Student *next;
+	if (cursor == NULL){
+		exit(1);
+	}
+	
+	while (cursor != NULL) {
+		next = cursor->next;
+		int fail = 0;
+		for (int i = 0; i < 4; i++) {
+			if (cursor->grades[i] < 3) {
+				fail = 1;
+				break;
+			}
+		}
+		if (fail) {
+			if (cursor == head) {
+				head = cursor->next;
+			}
+			else {
+				cursor->prev->next = cursor->next;
+				if (cursor->next != NULL) {
+					cursor->next->prev = cursor->prev;
+				}
+			}
+			free(cursor);
+		}
+		cursor = next;
+	}
+	return head;
+}
+
+void freeSpisok(struct Student* students) {
+	struct Student* temp;
+	while(students != NULL) {
+		temp = students;
+		students = students->next;
+		free(temp);
+	}
+}
+
+int main() {
+	struct Student *students = NULL;
+	int grades1[] = {5, 4, 5, 4};
+	int grades2[] = {5, 5, 5, 4};
+	int grades3[] = {3, 2, 4, 4};
+	int grades4[] = {4, 3, 5, 5};
+	int grades5[] = {3, 2, 5, 3};
+	students = add(students, "Shirokov", grades1);
+	students = add(students, "Gromova", grades2);
+	students = add(students, "Ivanov", grades3);
+	students = add(students, "Avdeev", grades4);
+	students = add(students, "Sharikov", grades5);
+	printf("Original Spisok:\n");
+	print_list(students);
+	
+	printf("\nSpisok without bad students:\n");
+	students = deleteList(students);
+	print_list(students);
+	
+	freeSpisok(students);
+	return 0;	
+}

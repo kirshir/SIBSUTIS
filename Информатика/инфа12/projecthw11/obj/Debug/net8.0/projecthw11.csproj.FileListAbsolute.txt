@@ -1,0 +1,14 @@
+C:\Users\zhann\Desktop\инфа12\projecthw11\bin\Debug\net8.0\projecthw11.exe
+C:\Users\zhann\Desktop\инфа12\projecthw11\bin\Debug\net8.0\projecthw11.deps.json
+C:\Users\zhann\Desktop\инфа12\projecthw11\bin\Debug\net8.0\projecthw11.runtimeconfig.json
+C:\Users\zhann\Desktop\инфа12\projecthw11\bin\Debug\net8.0\projecthw11.dll
+C:\Users\zhann\Desktop\инфа12\projecthw11\bin\Debug\net8.0\projecthw11.pdb
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.AssemblyInfoInputs.cache
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.AssemblyInfo.cs
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.csproj.CoreCompileInputs.cache
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.dll
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\refint\projecthw11.dll
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.pdb
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\projecthw11.genruntimeconfig.cache
+C:\Users\zhann\Desktop\инфа12\projecthw11\obj\Debug\net8.0\ref\projecthw11.dll

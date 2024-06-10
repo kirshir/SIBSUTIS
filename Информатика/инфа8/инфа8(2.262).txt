@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>262</Id>
+<Query>
+SELECT *
+FROM hr.employees 
+WHERE employee_id IN (134, 159, 183);
+</Query>
+</SqlQuery>

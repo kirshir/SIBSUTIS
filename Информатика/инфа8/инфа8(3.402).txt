@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>402</Id>
+<Query>
+SELECT COUNT(*) 
+FROM match_mast
+WHERE results <> 'DRAW';
+</Query>
+</SqlQuery>

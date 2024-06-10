@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>303</Id>
+<Query>
+SELECT *
+FROM hr.departments
+WHERE department_id IN (70, 90, 110)
+AND department_id IN (
+  SELECT department_id
+  FROM hr.jobs
+  WHERE min_salary >= 8000);
+</Query>
+</SqlQuery>

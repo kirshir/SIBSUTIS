@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>87</Id>
+<Query>
+SELECT ord_date, salesman_id, COUNT(*) as count
+FROM inventory.orders
+GROUP BY ord_date, salesman_id;
+</Query>
+</SqlQuery>

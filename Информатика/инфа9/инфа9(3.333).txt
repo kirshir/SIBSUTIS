@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>333</Id>
+<Query>
+SELECT rev_name, mov_title, MIN(rev_stars) as rev_stars
+FROM Movie JOIN Rating ON Rating.mov_id = Movie.mov_id
+LEFT JOIN Reviewer ON Reviewer.rev_id = Rating.rev_id;
+</Query>
+</SqlQuery>

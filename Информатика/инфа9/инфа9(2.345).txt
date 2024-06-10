@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>345</Id>
+<Query>
+SELECT gen_title, AVG(mov_time), COUNT(gen_title)
+FROM Movie JOIN Movie_genres ON Movie.mov_id = Movie_genres.mov_id 
+LEFT JOIN Genres on Movie_genres.gen_id = Genres.gen_id
+GROUP BY gen_title;
+</Query>
+</SqlQuery>

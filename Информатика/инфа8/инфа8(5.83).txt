@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SqlQuery>
+<Id>83</Id>
+<Query>
+SELECT customer_id, MAX(purch_amt) AS max
+FROM orders
+WHERE customer_id BETWEEN 3002 AND 3007
+GROUP BY customer_id
+HAVING max > 1000;
+</Query>
+</SqlQuery>
