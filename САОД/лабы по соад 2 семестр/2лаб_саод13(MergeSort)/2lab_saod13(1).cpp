@@ -126,66 +126,66 @@ void StackFillRand(int n, Stack *(&head))
     } while (i <= n);
 }
 
-void QueueFillInc(int n, Stack *(&head), Stack *(&tail))
-{
-    int i = 1;
-    Stack *p;
-    head = tail = new Stack;
-    head->next = tail->next = 0;
-    tail->data = i;
-    i++;
-    do
-    {
-        p = new Stack;
-        p->data = i;
-        tail->next = p;
-        tail = p;
-        i++;
+//void QueueFillInc(int n, Stack *(&head), Stack *(&tail))
+//{
+//    int i = 1;
+//    Stack *p;
+//    head = tail = new Stack;
+//    head->next = tail->next = 0;
+//    tail->data = i;
+//    i++;
+//    do
+//    {
+//        p = new Stack;
+//        p->data = i;
+//        tail->next = p;
+//        tail = p;
+//        i++;
+//
+//    } while (i <= n);
+//    tail->next = 0;
+//}
 
-    } while (i <= n);
-    tail->next = 0;
-}
+//void QueueFillDec(int n, Stack *(&head), Stack *(&tail))
+//{
+//    int i = n;
+//    Stack *p;
+//    head = tail = new Stack;
+//    head->next = tail->next = 0;
+//    tail->data = i;
+//    i--;
+//    do
+//    {
+//        p = new Stack;
+//        p->data = i;
+//        tail->next = p;
+//        tail = p;
+//        i--;
+//
+//    } while (i > 0);
+//    tail->next = 0;
+//}
 
-void QueueFillDec(int n, Stack *(&head), Stack *(&tail))
-{
-    int i = n;
-    Stack *p;
-    head = tail = new Stack;
-    head->next = tail->next = 0;
-    tail->data = i;
-    i--;
-    do
-    {
-        p = new Stack;
-        p->data = i;
-        tail->next = p;
-        tail = p;
-        i--;
-
-    } while (i > 0);
-    tail->next = 0;
-}
-
-void QueueFillRand(int n, Stack *(&head), Stack *(&tail))
-{
-    srand(time(NULL));
-    int i = 1;
-    Stack *p;
-    head = tail = new Stack;
-    head->next = tail->next = 0;
-    tail->data = rand() % (n * 2);
-    i++;
-    do
-    {
-        p = new Stack;
-        p->data = rand() % (n * 2);
-        tail->next = p;
-        tail = p;
-        i++;
-
-    } while (i <= n);
-    tail->next = 0;
-}
+//void QueueFillRand(int n, Stack *(&head), Stack *(&tail))
+//{
+//    srand(time(NULL));
+//    int i = 1;
+//    Stack *p;
+//    head = tail = new Stack;
+//    head->next = tail->next = 0;
+//    tail->data = rand() % (n * 2);
+//    i++;
+//    do
+//    {
+//        p = new Stack;
+//        p->data = rand() % (n * 2);
+//        tail->next = p;
+//        tail = p;
+//        i++;
+//
+//    } while (i <= n);
+//    tail->next = 0;
+//}
 
 int cleanStack(Stack **head) {
     if (*head == NULL) {
@@ -356,7 +356,7 @@ int main() {
 	Stack *S_tail = NULL;
 	int n = 31;
 	
-	StackFillDec(n, S_head);
+	StackFillInc(n, S_head);
 	printf("S: ");
 	printStack(S_head);
 	printf("\nСтэк S: Количество элементов = %d, Сумма = %d, Серии = %d\n\n", n, CheckSumStack(S_head), RunNumberStack(S_head));
