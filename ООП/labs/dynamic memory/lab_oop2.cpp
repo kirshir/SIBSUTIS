@@ -15,34 +15,50 @@ int** genMatrix(int size) {
 
 
 void spiralFromCenter(int** matrix, int* D, int size) {
-    int center = size / 2;
-    int index = 0;
-    int step = 0;
-    while (step <= center) {
-        int startRow = center - step;
-        int endRow = center + step;
-        int startCol = center - step;
-        int endCol = center + step;
+    int row = size / 2;
+    int col = size / 2;  
 
-        for (int i = startCol; i <= endCol; i++) {
-            D[index] = matrix[startRow][i];
-            index++;
-        }
-        for (int i = startRow + 1; i <= endRow; i++) {
-            D[index] = matrix[i][endCol];
-            index++;
-        }
-        for (int i = endCol - 1; i >= startCol; i--) {
-            D[index] = matrix[endRow][i];
-            index++;
-        }
-        for (int i = endRow - 1; i > startRow; i--) {
-            D[index] = matrix[i][startCol];
-            index++;
-        }
-        step++;
+    if (size % 2 == 0) { 
+        row -= 1;
+        col -= 1;
     }
-} 
+
+    int rowStep = 1; 
+    int colStep = 1;
+
+    int index = 0;  
+    D[index] = matrix[row][col];
+    index++;
+
+    for (int i = 1; i < size; i++) {
+        for (int step = 0; step < i; step++) {
+            col += colStep;
+            if (col >= 0 && col < size && row >= 0 && row < size) {
+                D[index] = matrix[row][col];
+                index++;
+            }
+        }
+       
+        for (int step = 0; step < i; step++) {
+            row += rowStep;
+            if (col >= 0 && col < size && row >= 0 && row < size) {
+                D[index] = matrix[row][col];
+                index++;
+            }
+        }
+
+        colStep = -colStep;
+        rowStep = -rowStep;
+    }
+
+    for (int step = 0; step < size - 1; step++) {
+        col += colStep;
+        if (col >= 0 && col < size && row >= 0 && row < size) {
+            D[index] = matrix[row][col];
+            index++;
+        }
+    }
+}
 
 
 void spiralFromLeft(int** matrix, int *D, int size) {
