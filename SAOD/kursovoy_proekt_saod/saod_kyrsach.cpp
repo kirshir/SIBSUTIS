@@ -296,12 +296,11 @@ void displayRecordsSorted(IndexEntry *index_head) {
 
 			Employee *current = currentEntry->Employee;
 
-			printf("Fullname: %s\n", current->fullname);
-            printf("Department number: %d\n", current->departmentNumber);
-            printf("Position: %s\n", current->position);
-            printf("Birthdate: %s\n", current->birthDate);
-            printf("------------------------\n");
-
+			printf("%s ", current->fullname);
+            printf("%d ", current->departmentNumber);
+            printf("%s ", current->position);
+            printf("%s\n", current->birthDate);
+        
 			currentEntry = currentEntry->next;
 			startIndex++;
 		}
@@ -328,11 +327,10 @@ void displayRecords(Employee *head) {
 	
 	printf("\n");
 	while (current) {
-		printf("Fullname: %s\n", current->fullname);
-        printf("Department number: %d\n", current->departmentNumber);
-        printf("Position: %s\n", current->position);
-        printf("Birthdate: %s\n", current->birthDate);
-        printf("------------------------\n");
+		printf("%s ", current->fullname);
+        printf("%d ", current->departmentNumber);
+        printf("%s ", current->position);
+        printf("%s\n", current->birthDate);
         
         recordCount++;
         if (recordCount % 20 == 0 && recordCount % MAX_EMPLOYEES != 0) {
@@ -364,11 +362,10 @@ void displayQueue(Queue *q) {
         	q->tail = NULL;
     	}
 		Employee *current = entry->Employee;
-		printf("Fullname: %s\n", current->fullname);
-        printf("Department number: %d\n", current->departmentNumber);
-        printf("Position: %s\n", current->position);
-        printf("Birthdate: %s\n", current->birthDate);
-        printf("------------------------\n");
+		printf("%s ", current->fullname);
+        printf("%d ", current->departmentNumber);
+        printf("%s ", current->position);
+        printf("%s\n", current->birthDate);
 
 		free(entry);
 	}

@@ -14,6 +14,54 @@ int** genMatrix(int size) {
 }
 
 
+void rightDiagonal(int** matrix, int* D, int size) {
+    int startRow = 0, endRow = size - 1;
+    int startCol = 0, endCol = size - 1;
+    int index = 0;
+  
+    for (int i = endCol; i >= 0; i--) {
+        int stepRow = 0;
+        int stepCol = i;
+        while(stepCol <= endCol) {
+        D[index] = matrix[stepRow][stepCol];
+        index++, stepRow++, stepCol++;
+        }
+    }
+        
+    for (int j = startRow + 1; j <= endCol; j++) {
+        int stepRow = j;
+        int stepCol = 0;
+        while(stepRow <= endRow) {
+        D[index] = matrix[stepRow][stepCol];
+        index++, stepRow++, stepCol++;
+        }
+    }    
+}
+
+void leftDiagonal(int** matrix, int* D, int size) {
+    int startRow = 0, endRow = size - 1;
+    int startCol = 0, endCol = size - 1;
+    int index = 0;
+    
+    for (int i = startCol; i <= endCol; i++){
+        int stepRow = 0;
+        int stepCol = i;
+        while(stepCol >= 0) {
+            D[index] = matrix[stepRow][stepCol];
+            index++, stepRow++, stepCol--;
+        }
+    }
+    for (int j = startRow + 1; j <= endRow; j++) {
+        int stepRow = j;
+        int stepCol = endCol;
+        while(stepRow <= endRow) {
+            D[index] = matrix[stepRow][stepCol];
+            index++, stepRow++, stepCol--;
+        }
+    }
+}
+
+
 void spiralFromCenter(int** matrix, int* D, int size) {
     int row = size / 2;
     int col = size / 2;  
@@ -124,13 +172,22 @@ int main() {
     
     printMatrix(matrix, N);
 
+
+    printf("Diagonal from right:\n");
+    rightDiagonal(matrix, D, N);
+    printArray(D, N * N);
+  
+    printf("Diagonal from left:\n");
+    leftDiagonal(matrix, D, N);
+    printArray(D, N * N);
+  
     printf("in a spiral, starting from the central element:\n");
     spiralFromCenter(matrix, D, N);
     printArray(D, N * N);
 
-    printf("in a spiral, starting from the top left element:\n");
-    spiralFromLeft(matrix, D, N);
-    printArray(D, N * N);    
+     printf("in a spiral, starting from the top left element:\n");
+     spiralFromLeft(matrix, D, N);
+     printArray(D, N * N);    
 
 
     for (int i = 0; i < N; i++) {

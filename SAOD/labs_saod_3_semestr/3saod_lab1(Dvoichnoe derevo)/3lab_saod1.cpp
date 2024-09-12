@@ -150,7 +150,7 @@ int main() {
     int h = height(root);
     printf("\nВысота = %d", h);
 
-    float s1 = sumOfLengths(root, 1) / size(root);
+    float s1 = (float)sumOfLengths(root, 1) / (float)size(root);
     printf("\nСредняя высота дерева = %.2f", s1);
 
     freeTree(root);
