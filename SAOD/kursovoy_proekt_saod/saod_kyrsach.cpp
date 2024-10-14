@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_EMPLOYEES 4000
 
@@ -30,6 +31,14 @@ typedef struct Queue {
 	IndexEntry *head;
 	IndexEntry *tail;
 } Queue;
+
+
+typedef struct Vertex {
+	Employee *employee;
+	int balance;
+	Vertex *L;
+	Vertex *R;
+} Vertex;
 
 
 Employee *createNode() {
@@ -83,7 +92,7 @@ void loadDataBase(Employee **head, Employee **tail, const char *filename) {
 }
 
 
-void IndexFillInc(Employee *Employee_head, IndexEntry **index_head) {
+void fillEmployeeIndex(Employee *Employee_head, IndexEntry **index_head) {
     Employee *current = Employee_head;
     IndexEntry *prev = NULL;
     int i = 0;
@@ -178,7 +187,7 @@ void merger(IndexEntry **a,  int q, IndexEntry **b, int r, Queue *c) {
 }
 
 
-void mergeSort(Employee *Employee_head, Employee *Employee_tail, IndexEntry *&index_head, IndexEntry *&index_tail) {
+void mergeSort(IndexEntry *&index_head, IndexEntry *&index_tail) {
 	IndexEntry *a = NULL;
 	IndexEntry *b = NULL;
 
@@ -251,27 +260,25 @@ void addQueue(Queue *q, IndexEntry *entry) {
 
 void bSearchYear(IndexEntry index_array[], int year, Queue *q) {
 	int L = 0, R = MAX_EMPLOYEES - 1;
-	int first = -1;
+	int first;
 
 	while(L < R) {
 		int m = (L + R) / 2;
 		int employeeYear = extractYear(index_array[m].Employee->birthDate);
 
-		if (employeeYear == year) {
-			first = m;
-			R = m;
-		} else if (employeeYear < year) {
+		if (employeeYear < year) {
 			L = m + 1;
 		} else {
 			R = m;
 		}
  	}
 
-	if (first == -1) {
+	if (extractYear(index_array[R].Employee->birthDate) == year) {
+		first = L;
+	} else {
 		printf("Nothing found.\n");
-		return;
 	}
-	
+
 	for (int i = first; i < MAX_EMPLOYEES && extractYear(index_array[i].Employee->birthDate) == year; i++) {
 		IndexEntry *entry = (IndexEntry *)malloc(sizeof(IndexEntry));
 		if (entry == NULL) {
@@ -282,6 +289,146 @@ void bSearchYear(IndexEntry index_array[], int year, Queue *q) {
         entry->next = NULL;
         addQueue(q, entry);
 	}
+}
+
+void rotateLL(Vertex *&p) {
+    Vertex *q = p->L;
+    p->balance = 0;
+    q->balance = 0;
+    p->L = q->R;
+    q->R = p;
+    p = q;
+}
+
+void rotateRR(Vertex *&p) {
+    Vertex *q = p->R;
+    p->balance = 0;
+    q->balance = 0;
+    p->R = q->L;
+    q->L = p;
+    p = q;
+}
+
+void rotateLR(Vertex *&p) {
+    Vertex *q = p->L;
+    Vertex *r = q->R;
+    if (r->balance < 0) {
+        p->balance = 1;
+    } else {
+        p->balance = 0;
+    }
+
+    if (r->balance > 0) {
+        q->balance = -1;
+    } else {
+        q->balance = 0;
+    }
+
+    r->balance = 0;
+    q->R = r->L;
+    p->L = r->R;
+    r->L = q;
+    r->R = p;
+    p = r;
+}
+
+void rotateRL(Vertex *&p) {
+    Vertex *q = p->R;
+    Vertex *r = q->L;
+    if (r->balance > 0) {
+        p->balance = -1;
+    } else {
+        p->balance = 0;
+    }
+
+    if (r->balance < 0) {
+        q->balance = 1;
+    } else {
+        q->balance = 0;
+    }
+
+    r->balance = 0;
+    q->L = r->R;
+    p->R = r->L;
+    r->L = p;
+    r->R = q;
+    p = r;
+}
+
+bool addAVL(Vertex *&p, Employee *employee, bool &rost) {
+    if (p == NULL) {
+        p = (Vertex*)malloc(sizeof(Vertex));
+        p->employee = employee;
+        p->balance = 0;
+        p->L = NULL;
+        p->R = NULL;
+        rost = true;
+    } else if (strcmp(p->employee->fullname, employee->fullname) > 0) {
+        if (addAVL(p->L, employee, rost)) {
+            if (rost == true) {
+                if (p->balance > 0) {
+                    p->balance = 0;
+                    rost = false;
+                } else if (p->balance == 0) {
+                    p->balance = -1;
+                    rost = true;
+                } else if (p->L->balance < 0) {
+                    rotateLL(p);
+                    rost = false;
+                } else {
+                    rotateLR(p);
+                    rost = false;
+                }
+            } 
+        } else {
+            return false;
+        }
+    } 
+    else if (strcmp(p->employee->fullname, employee->fullname) < 0) {
+        if (addAVL(p->R, employee, rost)) {
+            if (rost == true) {
+                if (p->balance < 0) {
+                    p->balance = 0;
+                    rost = false;
+                } else if (p->balance == 0) {
+                    p->balance = 1;
+                    rost = true;
+                } else if (p->R->balance > 0) {
+                    rotateRR(p);
+                    rost = false;
+                } else {
+                    rotateRL(p);
+                    rost = false;
+                }
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+Vertex *createAVL(Queue* q) {
+	Vertex* root = NULL;
+	bool rost;
+	
+	while (q->head != NULL) {
+		IndexEntry *entry = q->head;
+        q->head = q->head->next;
+
+        if (q->head == NULL) {
+            q->tail = NULL;
+        }
+
+		if(!addAVL(root, entry->Employee, rost)) {
+			printf("Error adding to tree!\n");
+		}
+		
+		free(entry);
+	}
+	return root;
 }
 
 
@@ -354,20 +501,27 @@ void displayQueue(Queue *q) {
 	if (q->head == NULL) {
 		return;
 	}
-	while (q->head != NULL) {
-		IndexEntry *entry = q->head;
-		q->head = q->head->next;
+	IndexEntry *current = q->head;
 
-		if (q->head == NULL) {
-        	q->tail = NULL;
-    	}
-		Employee *current = entry->Employee;
-		printf("%s ", current->fullname);
-        printf("%d ", current->departmentNumber);
-        printf("%s ", current->position);
-        printf("%s\n", current->birthDate);
+	while (current != NULL) {
+		Employee *emp = current->Employee;
+		printf("%s ", emp->fullname);
+        printf("%d ", emp->departmentNumber);
+        printf("%s ", emp->position);
+        printf("%s\n", emp->birthDate);
+		current = current->next;
+	}
+}
 
-		free(entry);
+
+void displayTree(Vertex* root) {
+	if (root != NULL) {
+		displayTree(root->L);
+		printf("%s ", root->employee->fullname);
+		printf("%d ", root->employee->departmentNumber);
+		printf("%s ", root->employee->position);
+		printf("%s\n", root->employee->birthDate);
+		displayTree(root->R);
 	}
 }
 
@@ -398,8 +552,25 @@ void freeQueue(Queue *q) {
 		entry = entry->next;
 		free(temp);
 	}
+	q->head = NULL;
+	q->tail = NULL;
 }
 
+
+void freeTree(Vertex* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    freeTree(root->L);
+    freeTree(root->R);
+    free(root);
+}
+
+/* 		Проверить освобождение памяти во всем коде
+		Проверить освобождение памяти конкретно для очередей и придумать где вызывать функцию freeQueue
+		Добавить поле в дереве next для одинаковых данных (Пример - 13)
+*/
 
 int main() {
 	Employee *Employee_head = NULL;
@@ -413,30 +584,32 @@ int main() {
 	IndexEntry index_array[MAX_EMPLOYEES];
 	int c;
 	char ch = 'n';
+	int sortFlag = 0;
+	int queueFlag = 0;
 	while (ch != 'y') {
 		printf("\n1)View records from file.\n");
 		printf("2)Sort records from file.\n");
 		printf("3)Find by birthdate.\n");
-		printf("4)End session\n");
+		printf("4)Create tree\n");
+		printf("5)End session\n");
 		printf("What to do (select a number): ");
 		scanf("%d", &c);
-		int sortFlag = 0;
 		switch(c) {
 			case 1:
 				displayRecords(Employee_head);
 				break;
 			case 2:
 				if (sortFlag == 0) {
-					IndexFillInc(Employee_head, &index_head);
-					mergeSort(Employee_head, Employee_tail, index_head, index_tail);
+					fillEmployeeIndex(Employee_head, &index_head);
+					mergeSort(index_head, index_tail);
 					sortFlag = 1;
 				}
 				displayRecordsSorted(index_head);
 				break;
 			case 3:
 				if (sortFlag == 0) {
-					IndexFillInc(Employee_head, &index_head);
-					mergeSort(Employee_head, Employee_tail, index_head, index_tail);
+					fillEmployeeIndex(Employee_head, &index_head);
+					mergeSort(index_head, index_tail);
 					sortFlag = 1;
 				}
 				int yearToFound;
@@ -447,16 +620,27 @@ int main() {
 				q.head = NULL, q.tail = NULL;
 				bSearchYear(index_array, yearToFound, &q);
 				displayQueue(&q);
-				freeQueue(&q);
+				queueFlag = 1;
 				break;
 			case 4:
+				if (queueFlag == 0) {
+					printf("First create a queue (key 3)\n");
+				} else {
+					Vertex* avlTree = createAVL(&q);
+					displayTree(avlTree);
+					freeTree(avlTree);
+					freeQueue(&q);
+					queueFlag = 0;
+				}
+				break;
+			case 5:
 				ch = 'y';
 				break;
 			default:
 				printf("Can't do\n");
 				break;
 		}
-		if (c != 4) {
+		if (c != 5) {
 			printf("End session? y/n ");
 			getchar();
 			scanf("%c", &ch);
