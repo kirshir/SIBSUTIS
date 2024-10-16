@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_EMPLOYEES 4000
 
@@ -38,6 +39,7 @@ typedef struct Vertex {
 	int balance;
 	Vertex *L;
 	Vertex *R;
+	Vertex *next;
 } Vertex;
 
 
@@ -247,7 +249,6 @@ int extractYear(const char *birthDate) {
 
 
 void addQueue(Queue *q, IndexEntry *entry) {
-	entry->next = NULL;
 	if (q->tail == NULL) {
 		q->head = entry;
 		q->tail = entry;
@@ -362,6 +363,7 @@ bool addAVL(Vertex *&p, Employee *employee, bool &rost) {
         p->balance = 0;
         p->L = NULL;
         p->R = NULL;
+		p->next = NULL;
         rost = true;
     } else if (strcmp(p->employee->fullname, employee->fullname) > 0) {
         if (addAVL(p->L, employee, rost)) {
@@ -405,7 +407,26 @@ bool addAVL(Vertex *&p, Employee *employee, bool &rost) {
             return false;
         }
     } else {
-        return false;
+        if (strcmp(p->employee->fullname, employee->fullname) == 0) {
+			Vertex* current = p;
+			while (current->next != NULL) {
+				current = current->next;
+			}
+			Vertex* newVertex = (Vertex*)malloc(sizeof(Vertex));
+			if (newVertex == NULL) {
+				printf("Memory Error\n");
+				return false;
+			}
+			newVertex->employee = employee;
+			newVertex->balance = 0;
+			newVertex->L = NULL;
+			newVertex->R = NULL;
+			newVertex->next = NULL;
+			current->next = newVertex;
+			return true;
+		} else {
+			return false;
+		}
     }
     return true;
 }
@@ -429,6 +450,68 @@ Vertex *createAVL(Queue* q) {
 		free(entry);
 	}
 	return root;
+}
+
+
+char* normalizeString(const char* str) {
+    char* normalized = (char*)malloc(strlen(str) + 1);
+    if (normalized == NULL) {
+        printf("Memory error\n");
+		return NULL;
+    }
+    
+    int j = 0;
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (str[i] != ' ') {
+            normalized[j] = tolower(str[i]);
+			j++;
+        }
+    }
+    normalized[j] = '\0';
+
+    return normalized;
+}
+
+
+Vertex* treeSearch(Vertex* root, const char* fullname) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    char* normalizedFullname = normalizeString(fullname);
+    char* normalizedVertexName = normalizeString(root->employee->fullname);
+
+    int cmp = strcmp(normalizedVertexName, normalizedFullname);
+    
+    free(normalizedFullname);
+    free(normalizedVertexName);
+    
+    if (cmp == 0) {
+        return root;
+    }
+    
+    if (cmp > 0) {
+        return treeSearch(root->L, fullname);
+    }
+    
+    return treeSearch(root->R, fullname);
+}
+
+
+void displaySearchResult(Vertex* result) {
+	if (result == NULL) {
+		printf("Nothing found\n");
+		return;
+	}
+	Vertex* current = result;
+	while (current != NULL) {
+		Employee* emp = current->employee;
+		printf("%s ", emp->fullname);
+        printf("%d ", emp->departmentNumber);
+        printf("%s ", emp->position);
+        printf("%s\n", emp->birthDate);
+		current = current->next;
+	}
 }
 
 
@@ -521,6 +604,15 @@ void displayTree(Vertex* root) {
 		printf("%d ", root->employee->departmentNumber);
 		printf("%s ", root->employee->position);
 		printf("%s\n", root->employee->birthDate);
+
+		Vertex* current = root->next;
+		while (current != NULL) {
+			printf("%s ", current->employee->fullname);
+			printf("%d ", current->employee->departmentNumber);
+			printf("%s ", current->employee->position);
+			printf("%s\n", current->employee->birthDate);
+			current = current->next;
+		}
 		displayTree(root->R);
 	}
 }
@@ -564,28 +656,27 @@ void freeTree(Vertex* root) {
 
     freeTree(root->L);
     freeTree(root->R);
-    free(root);
+	Vertex* current = root;
+	while (current != NULL) {
+		Vertex* nextVertex = current->next;
+		free(current);
+		current = nextVertex;
+	}
 }
 
-/* 		Проверить освобождение памяти во всем коде
-		Проверить освобождение памяти конкретно для очередей и придумать где вызывать функцию freeQueue
-		Добавить поле в дереве next для одинаковых данных (Пример - 13)
-*/
 
 int main() {
 	Employee *Employee_head = NULL;
 	Employee *Employee_tail = NULL;
-	
 	loadDataBase(&Employee_head, &Employee_tail, "testBase2.dat");
 	
-
 	IndexEntry *index_head = NULL;
 	IndexEntry *index_tail = NULL;
 	IndexEntry index_array[MAX_EMPLOYEES];
+	Queue q;
+	q.head = NULL, q.tail = NULL;
 	int c;
 	char ch = 'n';
-	int sortFlag = 0;
-	int queueFlag = 0;
 	while (ch != 'y') {
 		printf("\n1)View records from file.\n");
 		printf("2)Sort records from file.\n");
@@ -599,38 +690,47 @@ int main() {
 				displayRecords(Employee_head);
 				break;
 			case 2:
-				if (sortFlag == 0) {
+				if (index_head == NULL) {
 					fillEmployeeIndex(Employee_head, &index_head);
 					mergeSort(index_head, index_tail);
-					sortFlag = 1;
 				}
 				displayRecordsSorted(index_head);
 				break;
 			case 3:
-				if (sortFlag == 0) {
+				if (index_head == NULL) {
 					fillEmployeeIndex(Employee_head, &index_head);
 					mergeSort(index_head, index_tail);
-					sortFlag = 1;
 				}
+				freeQueue(&q);
 				int yearToFound;
 				printf("The year of birth that needs to be found: ");
 				scanf("%d", &yearToFound);
 				fillIndexArray(index_head, index_array);
-				Queue q;
-				q.head = NULL, q.tail = NULL;
 				bSearchYear(index_array, yearToFound, &q);
 				displayQueue(&q);
-				queueFlag = 1;
 				break;
 			case 4:
-				if (queueFlag == 0) {
+				if (q.head == NULL) {
 					printf("First create a queue (key 3)\n");
 				} else {
 					Vertex* avlTree = createAVL(&q);
 					displayTree(avlTree);
+					char searchChoice = 'y';
+					while(searchChoice == 'y') {
+						printf("Find a record in the tree? (y/n) ");
+						getchar();
+						scanf("%c", &searchChoice);
+						if (searchChoice == 'y' || searchChoice == 'Y') {
+							char searchName[31];
+							printf("Fullname you need to find: ");
+							scanf(" %[^\n]", searchName);
+							printf("You entered: %s\n", searchName);
+							Vertex* result = treeSearch(avlTree, searchName);
+							displaySearchResult(result);
+						}
+					}
 					freeTree(avlTree);
 					freeQueue(&q);
-					queueFlag = 0;
 				}
 				break;
 			case 5:
@@ -649,6 +749,7 @@ int main() {
 	
 	freeListEmployee(Employee_head);
 	freeListIndex(index_head);
-	
+	freeListIndex(index_tail);
+	freeQueue(&q);
 	return 0;
 }
