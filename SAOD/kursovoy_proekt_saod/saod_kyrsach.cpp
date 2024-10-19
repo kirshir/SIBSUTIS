@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #define MAX_EMPLOYEES 4000
 
@@ -463,7 +462,7 @@ char* normalizeString(const char* str) {
     int j = 0;
     for (int i = 0; str[i] != '\0'; i++) {
         if (str[i] != ' ') {
-            normalized[j] = tolower(str[i]);
+            normalized[j] = str[i];
 			j++;
         }
     }
@@ -677,7 +676,7 @@ int main() {
 	q.head = NULL, q.tail = NULL;
 	int c;
 	char ch = 'n';
-	while (ch != 'y') {
+	while (ch != 'y' && ch != 'Y') {
 		printf("\n1)View records from file.\n");
 		printf("2)Sort records from file.\n");
 		printf("3)Find by birthdate.\n");
@@ -724,7 +723,6 @@ int main() {
 							char searchName[31];
 							printf("Fullname you need to find: ");
 							scanf(" %[^\n]", searchName);
-							printf("You entered: %s\n", searchName);
 							Vertex* result = treeSearch(avlTree, searchName);
 							displaySearchResult(result);
 						}
